@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>🦖 Dino Run Adventure - Super Fun Dinosaur Game for Kids! 🌟</title>
+  <meta name="description" content="Super colorful and fun dinosaur running game for kids! Jump, collect fruits, grab rainbow shields, and beat your high score!">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🦖</text></svg>">
+  
+  <!-- Google Fonts: Fredoka & Bubblegum Sans for cute kids look -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bubblegum+Sans&family=Fredoka:wght@400;600;700;800&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Floating background decorations -->
+  <div class="decor-bubble b1">🎈</div>
+  <div class="decor-bubble b2">⭐</div>
+  <div class="decor-bubble b3">🍉</div>
+  <div class="decor-bubble b4">🌈</div>
+  <div class="decor-bubble b5">🍎</div>
+
+  <main class="game-wrapper">
+    <!-- Header / Title Bar -->
+    <header class="game-header">
+      <div class="header-left">
+        <h1 class="game-title">
+          <span class="dino-emoji">🦖</span> Dino Run <span class="badge-adventure">Adventure!</span>
+        </h1>
+        <p class="subtitle">Bacho ki pyari aur mazedaar Dinosaur Game! 🌈</p>
+      </div>
+      <div class="header-controls">
+        <button id="soundToggleBtn" class="pill-btn sound-btn" title="Sound On / Off" aria-label="Toggle Sound">
+          <span class="btn-icon">🔊</span> <span class="btn-text">Music On</span>
+        </button>
+        <button id="charSelectBtn" class="pill-btn char-btn" title="Choose Dino" aria-label="Choose Dino Character">
+          <span class="btn-icon">🎨</span> <span class="btn-text">Pick Dino</span>
+        </button>
+        <button id="difficultyBtn" class="pill-btn diff-btn" title="Difficulty" aria-label="Toggle Difficulty">
+          <span class="btn-icon">🍼</span> <span id="diffText">Baby Mode</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Game Card Canvas Container -->
+    <section class="canvas-container" id="canvasContainer">
+      <!-- HUD Bar: Score, High Score, Hearts, Powers -->
+      <div class="game-hud" id="gameHud">
+        <div class="hud-box hud-lives" id="livesContainer">
+          <span class="heart-icon">❤️</span>
+          <span class="heart-icon">❤️</span>
+          <span class="heart-icon">❤️</span>
+        </div>
+
+        <div class="hud-box hud-powerup" id="hudPowerup" style="display: none;">
+          <span class="power-icon" id="powerIcon">🌈</span>
+          <span class="power-name" id="powerName">SHIELD!</span>
+          <div class="power-bar-wrapper">
+            <div class="power-bar-fill" id="powerBarFill"></div>
+          </div>
+        </div>
+
+        <div class="hud-stats">
+          <div class="hud-box hud-coins">
+            <span class="hud-icon">⭐</span>
+            <span id="coinsCount">0</span>
+          </div>
+          <div class="hud-box hud-score">
+            <span class="score-label">SCORE:</span>
+            <span id="currentScore">0</span>
+          </div>
+          <div class="hud-box hud-high">
+            <span class="high-label">BEST 🏆:</span>
+            <span id="highScore">0</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main HTML5 Canvas -->
+      <canvas id="gameCanvas" width="960" height="450"></canvas>
+
+      <!-- Start Screen Overlay -->
+      <div class="overlay-screen" id="startScreen">
+        <div class="screen-card bounce-in">
+          <div class="dino-avatar-bounce" id="avatarPreview">🦖</div>
+          <h2 class="card-title">Chalo Khelain! Are You Ready? 🚀</h2>
+          <p class="card-desc">Spacebar dabao ya Jump button dabao aur obstacles se bach kar sweet fruits aur stars jama karo!</p>
+          
+          <div class="character-preview-row">
+            <span class="preview-label">Selected Dino:</span>
+            <span class="preview-dino-name" id="selectedDinoLabel">Rexy (Green Hero)</span>
+          </div>
+
+          <div class="screen-actions">
+            <button id="startPlayBtn" class="big-cta-btn">
+              <span class="cta-emoji">🎮</span> PLAY NOW! (Khelain)
+            </button>
+          </div>
+
+          <div class="key-hints">
+            <span class="key-pill">⬆️ Space / Up Arrow = JUMP</span>
+            <span class="key-pill">⬇️ Down Arrow = DUCK</span>
+            <span class="key-pill">📱 Screen Tap = JUMP</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Game Over Screen Overlay -->
+      <div class="overlay-screen" id="gameOverScreen" style="display: none;">
+        <div class="screen-card pop-in">
+          <div class="gameover-emoji">🥳</div>
+          <h2 class="card-title" id="gameOverTitle">Bohat Acha Khela! 👏</h2>
+          <p class="card-desc" id="gameOverSubtitle">Aap ne zabardast koshish ki! Dobara try karen aur naya record banayein!</p>
+          
+          <div class="gameover-stats-grid">
+            <div class="stat-card">
+              <span class="stat-title">Final Score</span>
+              <span class="stat-val" id="finalScoreVal">0</span>
+            </div>
+            <div class="stat-card">
+              <span class="stat-title">Stars & Fruits</span>
+              <span class="stat-val" id="finalCoinsVal">0 ⭐</span>
+            </div>
+            <div class="stat-card highlight">
+              <span class="stat-title">Best Score 🏆</span>
+              <span class="stat-val" id="finalBestVal">0</span>
+            </div>
+          </div>
+
+          <div class="screen-actions">
+            <button id="restartPlayBtn" class="big-cta-btn restart-btn">
+              <span class="cta-emoji">🔄</span> PLAY AGAIN! (Dobara Khelo)
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Character Selection Modal -->
+      <div class="overlay-screen" id="charModal" style="display: none;">
+        <div class="screen-card modal-card">
+          <h2 class="card-title">Apna Favorite Dino Chunein! 🎨</h2>
+          <p class="card-desc">Har Dinosaur pyara aur tezi se bhagney wala hai!</p>
+          
+          <div class="dino-selector-grid" id="dinoOptionsContainer">
+            <!-- Dynamically populated / styled -->
+          </div>
+
+          <button id="closeCharModalBtn" class="close-modal-btn">
+            Done! Ready To Run 👍
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- On-Screen Big Touch Buttons for Kids & Mobile/Tablets -->
+    <div class="touch-controls" id="touchControls">
+      <button class="touch-btn duck-btn" id="touchDuckBtn" aria-label="Duck">
+        <span class="btn-sym">⬇️</span>
+        <span class="btn-lbl">DUCK (Jhuko)</span>
+      </button>
+
+      <button class="touch-btn jump-btn" id="touchJumpBtn" aria-label="Jump">
+        <span class="btn-sym">⬆️</span>
+        <span class="btn-lbl">JUMP! (Chhalaang)</span>
+      </button>
+    </div>
+
+    <!-- Instruction Bar for Parents & Kids -->
+    <footer class="game-footer">
+      <div class="tip-box">
+        <span class="tip-badge">💡 Trick:</span>
+        <span class="tip-text">Rainbow Shield 🌈 lenay se Dino invincible ho jata hai! Chhoti chidiya se bachne k liye DUCK ⬇️ karein!</span>
+      </div>
+      <p class="author-credits">Made with ❤️ for kids & families by <strong>Ansar Waseem</strong></p>
+    </footer>
+  </main>
+
+  <script src="game.js"></script>
+</body>
+</html>
